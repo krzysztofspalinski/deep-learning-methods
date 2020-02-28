@@ -2,11 +2,16 @@ import nn_basic_functions as func
 import numpy as np
 from matplotlib import pyplot as plt
 import random
+from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 class Layer:
+    """
+
+    """
     def __init__(self, n_of_neurons: int, n_of_neurons_prev, activation_function_and_derivative):
         self.activation_function, self.activation_function_derivative = func.af_text2func(activation_function_and_derivative)
-        self.weights = func.initialize_weights(n_of_neurons, n_of_neurons_prev)
+        self.weights = func.initialize_weights(n_of_neurons_prev, n_of_neurons)
         return
 
     def propagate(self, A):
@@ -27,6 +32,9 @@ class Layer:
         return
 
 class NeuralNetworkClassifier:
+    """
+
+    """
     #TODO: what about regression?
 
     def __init__(self, learning_rate=1e-3, batch_size=1):
@@ -43,8 +51,42 @@ class NeuralNetworkClassifier:
         assert isinstance(layer, Layer), "Input is not a nn layer!"
         self.layers.append(layer)
 
-    def train(self, X, y, epochs):
-        loss_on_epoch = []
+    def _predict_probability(self, X):
+        #TODO: for prediction outside class we need transposition
+        """
+        predict
+        :param X:
+        :return:
+        """
+        for i in range(len(self.layers)):
+            X, Z = self.layers[i].propagate(X)
+        return Z
+
+
+    def train(self, X, y, epochs, validation_split=0.1, verbosity=True):
+        """
+
+        :param X:
+        :param y:
+        :param epochs:
+        :param validation_split:
+        :param verbosity:
+        :return:
+        """
+
+        if validation_split > 0:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=validation_split)
+
+            X_train = np.reshape(X_train, (X_train.shape[0], -1)).T
+            X_test = np.reshape(X_test, (X_test.shape[0], -1)).T
+            y_train = np.reshape(y_train, (1, y_train.shape[0]))
+            y_test = np.reshape(y_test, (1, y_test.shape[0]))
+        else:
+            X_train = np.reshape(X, (X.shape[0], -1)).T
+            y_train = np.reshape(y, (1, y.shape[0]))
+
+        loss_on_epoch = [0 for i in range(epochs)]
+
 
         def _create_batches(n_obs, batch_size):
             idxs = [i for i in range(n_obs)]
@@ -55,25 +97,49 @@ class NeuralNetworkClassifier:
                 for i in batch: idxs.remove(i)
             if len(idxs) != 0: batches.append(idxs)
             return batches
-        batches = _create_batches(X.shape[0], self.batch_size)
+
+        batches = _create_batches(X_train.shape[0], self.batch_size)
 
         for epoch in range(epochs):
 
-            for batch in batches:
-                X_train = X[batch, :]
-                y_train = y[:, batch]
+            # TODO: we need functionality of using any metrics
+            accuracy_score = 0
+
+            progress_bar = range(len(batches))
+            if verbosity: progress_bar = tqdm(progress_bar)
+
+            for batch_num in progress_bar:
+
+                X_train_batch = X_train[:, batches[batch_num]]
+                y_train_batch = y_train[:, batches[batch_num]]
                 # propagation
 
-                self.cache['A0'] = X_train
-                A = X_train
+                self.cache['A0'] = X_train_batch
+                A = X_train_batch
                 for i in range(len(self.layers)):
                     A, Z = self.layers[i].propagate(A)
                     self.cache['Z' + str(i + 1)] = Z
                     self.cache['A' + str(i + 1)] = A
-                loss_on_iteration.append(func.loss_function(A, y_train, self.batch_size))
+
+                loss_on_epoch[epoch] += func.loss_function(A, y_train_batch, self.batch_size)
+
+                #prediction
+
+                train_pred = (self._predict_probability(X_train_batch) >= 0.5)
+                # updating accuracy score
+                # weighted average of present and new batch accuracy
+                # TODO: we need more scalability here
+
+                accuracy_score_new = func.accuracy_score(y_train_batch, train_pred)
+
+                accuracy_score = accuracy_score_new * self.batch_size + accuracy_score * self.batch_size * batch_num
+                accuracy_score /= self.batch_size * (1 + batch_num) #dividing by weights
+
+                progress_bar.set_description(f"Epoch {epoch+1} -- Train accuracy: {accuracy_score:.3f}")
+
 
                 # TODO: it should work for regression tasks also;
-                dA = - (np.divide(y_train, A) - np.divide(1 - y_train, 1 - A))
+                dA = - (np.divide(y_train_batch, A) - np.divide(1 - y_train_batch, 1 - A))
 
                 # back propagation
                 for i in range(len(self.layers) - 1, -1, -1):
@@ -88,8 +154,10 @@ class NeuralNetworkClassifier:
                     self.layers[i].update_weights(dW, db, self.learning_rate)
                     dA = dA_prev
 
-            if epoch % 100 == 0:
-                print(f'Cost after {epoch} epoch: {loss_on_epoch[epoch]}')
+            # if epoch % 100 == 0:
+            #     print(f'Cost after {epoch} epoch: {loss_on_epoch[epoch]}')
+            test_pred = (self._predict_probability(X_test) >= 0.5)
+            print(f"Validation accuracy:{func.accuracy_score(y_test, test_pred):.3f}")
 
             #???
             self.loss_on_epoch = loss_on_epoch
@@ -102,14 +170,7 @@ class NeuralNetworkClassifier:
         plt.show()
 
 
-def normalize_data(X_train, X_test):
-    mi = np.mean(X_train, axis=1, keepdims=True)
-    sigma = np.sqrt(np.mean(X_train ** 2, axis=1, keepdims=True))
-    assert (mi.shape == (X_train.shape[0], 1))
-    assert (sigma.shape == (X_train.shape[0], 1))
-    X_train = (X_train - mi) / sigma
-    X_test = (X_test - mi) / sigma
-    return X_train, X_test
+
 
 def main():
     pass

@@ -46,7 +46,7 @@ def tanh_derivative(Z):
 
 
 def loss_function(y_hat, y, m):
-	loss = (-1 / m) * np.sum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+	loss = (-1 / m) * (np.sum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat)))
 	loss = np.squeeze(loss)
 	return loss
 
@@ -71,3 +71,16 @@ def af_text2func(name: str):
 		return tanh, tanh_derivative
 	else:
 		raise Exception('Wrong name of activation function.')
+
+def accuracy_score(y_true, y_pred):
+	return np.sum(y_true == y_pred) / y_true.shape[1]
+
+
+def normalize_data(X_train, X_test):
+    mi = np.mean(X_train, axis=1, keepdims=True)
+    sigma = np.sqrt(np.mean(X_train ** 2, axis=1, keepdims=True))
+    assert (mi.shape == (X_train.shape[0], 1))
+    assert (sigma.shape == (X_train.shape[0], 1))
+    X_train = (X_train - mi) / sigma
+    X_test = (X_test - mi) / sigma
+    return X_train, X_test
