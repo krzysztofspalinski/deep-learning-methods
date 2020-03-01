@@ -23,7 +23,7 @@ def relu_derivative(Z):
 
 
 def leaky_relu(Z):
-	Z = ((Z>0) * Z) + ((Z<0) * Z * 0.01)
+	Z = ((Z > 0) * Z) + ((Z < 0) * Z * 0.01)
 	return Z
 
 
@@ -45,8 +45,14 @@ def tanh_derivative(Z):
 	return Z
 
 
-def loss_function(y_hat, y, m):
+def logistic_loss(y_hat, y, m):
 	loss = (-1 / m) * (np.sum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat)))
+	loss = np.squeeze(loss)
+	return loss
+
+
+def max_likelihood_loss(y_hat, y, m):
+	loss = (-1 / m) * np.sum(y * np.log(y_hat))
 	loss = np.squeeze(loss)
 	return loss
 
@@ -58,6 +64,15 @@ def initialize_weights(n_of_neurons: int, n_of_neurons_prev: int):
 		'W': W,
 		'b': b}
 	return weights
+
+
+def loss_text2func(name):
+	if name == "logistic_loss":
+		return logistic_loss
+	elif name == "max_likelihood_loss":
+		return max_likelihood_loss
+	else:
+		raise Exception('Wrong name of loss function.')
 
 
 def af_text2func(name: str):
@@ -72,15 +87,16 @@ def af_text2func(name: str):
 	else:
 		raise Exception('Wrong name of activation function.')
 
+
 def accuracy_score(y_true, y_pred):
 	return np.sum(y_true == y_pred) / y_true.shape[1]
 
 
 def normalize_data(X_train, X_test):
-    mi = np.mean(X_train, axis=1, keepdims=True)
-    sigma = np.sqrt(np.mean(X_train ** 2, axis=1, keepdims=True))
-    assert (mi.shape == (X_train.shape[0], 1))
-    assert (sigma.shape == (X_train.shape[0], 1))
-    X_train = (X_train - mi) / sigma
-    X_test = (X_test - mi) / sigma
-    return X_train, X_test
+	mi = np.mean(X_train, axis=1, keepdims=True)
+	sigma = np.sqrt(np.mean(X_train ** 2, axis=1, keepdims=True))
+	assert (mi.shape == (X_train.shape[0], 1))
+	assert (sigma.shape == (X_train.shape[0], 1))
+	X_train = (X_train - mi) / sigma
+	X_test = (X_test - mi) / sigma
+	return X_train, X_test
