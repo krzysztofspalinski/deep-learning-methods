@@ -45,16 +45,37 @@ def tanh_derivative(Z):
 	return Z
 
 
+def softmax(Z):
+	Z_exp = np.exp(Z)
+	return Z_exp / np.sum(Z_exp, axis=0)
+
+
+def softmax_derivative(Z):
+	"""
+	Backpropagation for softmax is done in easier way (dL/dZ = A - y),
+	so it is not needed.
+	"""
+	return None
+
+
 def logistic_loss(y_hat, y, m):
 	loss = (-1 / m) * (np.sum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat)))
 	loss = np.squeeze(loss)
 	return loss
 
 
+def logistic_loss_derivative(y_hat, y):
+	return np.divide(1 - y, 1 - y_hat) - np.divide(y, y_hat)
+
+
 def max_likelihood_loss(y_hat, y, m):
 	loss = (-1 / m) * np.sum(y * np.log(y_hat))
 	loss = np.squeeze(loss)
 	return loss
+
+
+def max_likelihood_loss_derivative(y_hat, y):
+	return -np.divide(y, y_hat)
 
 
 def initialize_weights(n_of_neurons: int, n_of_neurons_prev: int):
@@ -68,9 +89,9 @@ def initialize_weights(n_of_neurons: int, n_of_neurons_prev: int):
 
 def loss_text2func(name):
 	if name == "logistic_loss":
-		return logistic_loss
+		return logistic_loss, logistic_loss_derivative
 	elif name == "max_likelihood_loss":
-		return max_likelihood_loss
+		return max_likelihood_loss, max_likelihood_loss_derivative
 	else:
 		raise Exception('Wrong name of loss function.')
 
@@ -84,6 +105,8 @@ def af_text2func(name: str):
 		return leaky_relu, leaky_relu_derivative
 	elif name == 'tanh':
 		return tanh, tanh_derivative
+	elif name == 'softmax':
+		return softmax, softmax_derivative
 	else:
 		raise Exception('Wrong name of activation function.')
 
