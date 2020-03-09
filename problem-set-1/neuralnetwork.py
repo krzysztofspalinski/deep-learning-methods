@@ -3,9 +3,24 @@ import numpy as np
 
 
 class Layer:
-    def __init__(self, n_of_neurons: int, n_of_neurons_prev, activation_function_and_derivative):
+    """
+    MLP's Layer class
+    """
+    def __init__(self,
+                 n_of_neurons: int,
+                 n_of_neurons_prev,
+                 activation_function_and_derivative,
+                 bias=True):
+        """
+        :param n_of_neurons: output size
+        :param n_of_neurons_prev: input size
+        :param activation_function_and_derivative: activation function name
+        :param bias: trigger defining if bias should be fitted
+        """
         self.activation_function, self.activation_function_derivative = activation_function_and_derivative
         self.weights = func.initialize_weights(n_of_neurons, n_of_neurons_prev)
+        self.bias = bias
+        if not self.bias: self.weights['b'] *= 0
 
     def propagate(self, A):
         Z = np.dot(self.weights['W'], A) + self.weights['b']
@@ -25,10 +40,27 @@ class Layer:
     def update_weights(self, dW, db, learning_rate):
         self.weights['W'] = self.weights['W'] - learning_rate * dW
         self.weights['b'] = self.weights['b'] - learning_rate * db
-
+        if not self.bias: self.weights['b'] *= 0
 
 class NeuralNetwork:
-    def __init__(self, input_dim: int, neuron_numbers: list, activation_functions: list, loss_function, learning_rate: float):
+    """
+    Multilayer perceptron NumPy implementation
+    """
+    def __init__(self,
+                 input_dim: int,
+                 neuron_numbers: list,
+                 activation_functions: list,
+                 loss_function,
+                 learning_rate: float,
+                 bias=True):
+        """
+        :param input_dim:
+        :param neuron_numbers:
+        :param activation_functions:
+        :param loss_function:
+        :param learning_rate:
+        :param bias:
+        """
         self.learning_rate = learning_rate
         self.neuron_numbers = neuron_numbers
         self.activation_functions = activation_functions
@@ -40,13 +72,19 @@ class NeuralNetwork:
         self.n = input_dim  # dimension of observations
         self.m = None  # number of observations
         self.layers = None
-        self.create_layers()
+        self.bias = bias
+        self.create_layers(self.bias)
 
-    def create_layers(self):
-        self.layers = [Layer(self.neuron_numbers[0], self.n, func.af_text2func(self.activation_functions[0]))]
+    def create_layers(self, bias):
+        self.layers = [Layer(self.neuron_numbers[0],
+                             self.n,
+                             func.af_text2func(self.activation_functions[0]),
+                             bias)]
         for i in range(1, len(self.neuron_numbers)):
-            self.layers.append(Layer(self.neuron_numbers[i], self.neuron_numbers[i - 1],
-                                     func.af_text2func(self.activation_functions[i])))
+            self.layers.append(Layer(self.neuron_numbers[i],
+                                     self.neuron_numbers[i - 1],
+                                     func.af_text2func(self.activation_functions[i]),
+                                     bias))
 
     def train(self, X_train, y_train, iterations):
         """

@@ -6,10 +6,32 @@ from matplotlib import pyplot as plt
 
 
 class NeuralNetworkWrapper:
-    def __init__(self, input_dim, neuron_numbers, activation_functions, loss_function, learning_rate, batch_size=1):
+    def __init__(self,
+                 input_dim,
+                 neuron_numbers,
+                 activation_functions,
+                 loss_function,
+                 learning_rate,
+                 batch_size=1,
+                 bias=True):
+        """
+        Wrapper for NeuralNetwork class
+        :param input_dim: input size
+        :param neuron_numbers: list of hidden layers' size
+        :param activation_functions: list of activation functions for each layer
+        :param loss_function
+        :param learning_rate
+        :param batch_size
+        :param bias: boolean triggering if bias has to be fitted
+        """
         self.learning_rate = learning_rate
         self.batch_size = batch_size
-        self.NN = NeuralNetwork(input_dim, neuron_numbers, activation_functions, loss_function, learning_rate)
+        self.NN = NeuralNetwork(input_dim,
+                                neuron_numbers,
+                                activation_functions,
+                                loss_function,
+                                learning_rate,
+                                bias)
         self.loss_on_epoch = []
 
     def create_batches(self, n_obs, batch_size):
@@ -27,8 +49,11 @@ class NeuralNetworkWrapper:
         return batches
 
     def train(self, X, y, epochs, validation_split=0.1, verbosity=True):
+        self.validation_split = validation_split
         if validation_split > 0:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=validation_split)
+            y_test = np.reshape(y_test, (y_test.shape[0], -1))
+            self.loss_on_epoch_valid = []
         else:
             X_train = X
             y_train = y
@@ -44,16 +69,21 @@ class NeuralNetworkWrapper:
                 self.NN.train(X_train_batch, y_train_batch, 1)
 
             self.loss_on_epoch.append(self.NN.loss_function(self.NN.predict(X_train), y_train.T, y_train.shape[0]))
-            if verbosity and (epoch + 1) % 10 == 0 :
-                print(f'Loss after {epoch + 1} epochs: {self.loss_on_epoch[-1]}', end="\n")
-        print(f'Final loss: {self.loss_on_epoch[-1]}', end="\n")
+
+            if validation_split > 0:
+                self.loss_on_epoch_valid.append(self.NN.loss_function(self.NN.predict(X_test), y_test.T, y_test.shape[0]))
+            if verbosity: print(f'Loss after {epoch + 1} epochs: {self.loss_on_epoch[-1]:^.3f}', end="\n")
+        print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return
 
     def plot_loss(self):
         epochs = len(self.loss_on_epoch)
         fig = plt.figure(figsize=(12, 6))
         ax1 = fig.add_subplot(111)
-        ax1.plot(list(range(epochs)), self.loss_on_epoch)
+        ax1.plot(list(range(epochs)), self.loss_on_epoch, label='Training Loss')
+        if self.validation_split > 0:
+            ax1.plot(list(range(epochs)), self.loss_on_epoch_valid, label='Validation Loss')
+        ax1.legend(loc="upper right")
         plt.show()
 
     def predict(self, X):
