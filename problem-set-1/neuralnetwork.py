@@ -1,7 +1,7 @@
 import activation_functions as af
 import loss_functions as lf
 import numpy as np
-
+import optimizers
 
 class Layer:
     """
@@ -62,6 +62,7 @@ class NeuralNetwork:
                  neuron_numbers: list,
                  activation_functions: list,
                  loss_function,
+                 optimizer,
                  learning_rate: float,
                  bias=True):
         """
@@ -83,6 +84,7 @@ class NeuralNetwork:
         self.n = input_dim  # dimension of observations
         self.m = None  # number of observations
         self.layers = None
+        self.optimizer = optimizer
         self.bias = bias
         self.create_layers(self.bias)
 
@@ -129,9 +131,16 @@ class NeuralNetwork:
                 dW, db, dA_prev = self.layers[i].back_propagate(None, Z, A_prev, self.m, True, A, self.y)
                 self.layers[i].update_weights(dW, db, self.learning_rate)
                 dA = dA_prev
+
+                # correction of gradient with optimizer
+                dA = self.optimizer.optimize(dA)
+
                 i = i - 1
             else:
                 dA = self.loss_function_derivative(A, self.y)
+
+                # correction of gradient with optimizer
+                dA = self.optimizer.optimize(dA)
 
             while i >= 0:
                 Z = self.cache['Z' + str(i + 1)]
