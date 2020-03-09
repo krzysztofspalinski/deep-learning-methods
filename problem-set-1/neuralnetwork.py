@@ -1,4 +1,5 @@
-import nn_basic_functions as func
+import activation_functions as af
+import loss_functions as lf
 import numpy as np
 
 
@@ -18,7 +19,7 @@ class Layer:
         :param bias: trigger defining if bias should be fitted
         """
         self.activation_function, self.activation_function_derivative = activation_function_and_derivative
-        self.weights = func.initialize_weights(n_of_neurons, n_of_neurons_prev)
+        self.weights = Layer.initialize_weights(n_of_neurons, n_of_neurons_prev)
         self.bias = bias
         if not self.bias: self.weights['b'] *= 0
 
@@ -42,6 +43,16 @@ class Layer:
         self.weights['b'] = self.weights['b'] - learning_rate * db
         if not self.bias: self.weights['b'] *= 0
 
+    @staticmethod
+    def initialize_weights(n_of_neurons: int, n_of_neurons_prev: int):
+        W = np.random.randn(n_of_neurons, n_of_neurons_prev) * np.sqrt(2 / n_of_neurons_prev)
+        b = np.random.randn(n_of_neurons, 1)
+        weights = {
+            'W': W,
+            'b': b}
+        return weights
+
+
 class NeuralNetwork:
     """
     Multilayer perceptron NumPy implementation
@@ -64,7 +75,7 @@ class NeuralNetwork:
         self.learning_rate = learning_rate
         self.neuron_numbers = neuron_numbers
         self.activation_functions = activation_functions
-        self.loss_function, self.loss_function_derivative = func.loss_text2func(loss_function)
+        self.loss_function, self.loss_function_derivative = lf.text2func(loss_function)
         self.cache = {}
         self.loss_on_iteration = None
         self.X = None
@@ -78,12 +89,12 @@ class NeuralNetwork:
     def create_layers(self, bias):
         self.layers = [Layer(self.neuron_numbers[0],
                              self.n,
-                             func.af_text2func(self.activation_functions[0]),
+                             af.text2func(self.activation_functions[0]),
                              bias)]
         for i in range(1, len(self.neuron_numbers)):
             self.layers.append(Layer(self.neuron_numbers[i],
                                      self.neuron_numbers[i - 1],
-                                     func.af_text2func(self.activation_functions[i]),
+                                     af.text2func(self.activation_functions[i]),
                                      bias))
 
     def train(self, X_train, y_train, iterations):
