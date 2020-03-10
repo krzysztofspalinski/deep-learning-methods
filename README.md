@@ -4,6 +4,9 @@ Project for Python for Deep Learning Methods course (summer semester 2019/2020) 
 
 ## Content
 
-* Problem set 1 - Multilayer perceptron implementation in NumPy
-* Problem set 2 - Convolutional neural network implementation in PyTorch/Tensorflow
-* Problem set 3 - Reccurent neural network implementation in PyTorch/Tensorflow
+Multilayer perceptron implemented in NumPy
+
+TODO:
+* describe functionalites
+* add decision boundary animation
+* add nn animation
