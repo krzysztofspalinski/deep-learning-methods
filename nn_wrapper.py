@@ -12,6 +12,7 @@ class NeuralNetworkWrapper:
                  activation_functions,
                  loss_function,
                  learning_rate,
+                 optimizer,
                  batch_size=1,
                  bias=True):
         """
@@ -31,6 +32,7 @@ class NeuralNetworkWrapper:
                                 activation_functions,
                                 loss_function,
                                 learning_rate,
+                                optimizer,
                                 bias)
         self.loss_on_epoch = []
 
