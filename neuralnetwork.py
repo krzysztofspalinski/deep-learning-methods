@@ -1,7 +1,7 @@
 import activation_functions as af
 import loss_functions as lf
 import numpy as np
-
+import optimizers
 
 class Layer:
     """
@@ -41,7 +41,13 @@ class Layer:
     def update_weights(self, dW, db, learning_rate):
         self.weights['W'] = self.weights['W'] - learning_rate * dW
         self.weights['b'] = self.weights['b'] - learning_rate * db
+        self.weights['dW'] = dW
+        self.weights['db'] = db
+
         if not self.bias: self.weights['b'] *= 0
+
+    def get_weights(self):
+        return self.weights
 
     @staticmethod
     def initialize_weights(n_of_neurons: int, n_of_neurons_prev: int):
@@ -49,7 +55,9 @@ class Layer:
         b = np.random.randn(n_of_neurons, 1)
         weights = {
             'W': W,
-            'b': b}
+            'b': b,
+            'dW': 0 * W,
+            'db': 0 * b}
         return weights
 
 
@@ -63,6 +71,7 @@ class NeuralNetwork:
                  activation_functions: list,
                  loss_function,
                  learning_rate: float,
+                 optimizer,
                  bias=True):
         """
         :param input_dim:
@@ -84,6 +93,7 @@ class NeuralNetwork:
         self.m = None  # number of observations
         self.layers = None
         self.bias = bias
+        self.optimizer = optimizer
         self.create_layers(self.bias)
 
     def create_layers(self, bias):
@@ -127,6 +137,12 @@ class NeuralNetwork:
                 Z = self.cache['Z' + str(i + 1)]
                 A_prev = self.cache['A' + str(i)]
                 dW, db, dA_prev = self.layers[i].back_propagate(None, Z, A_prev, self.m, True, A, self.y)
+
+                # dict of W, b, dW, db in i-th layer
+                old_weights = self.layers[i].get_weights()
+                dW = self.optimizer.optimize(old_weights['dW'], dW)
+                db = self.optimizer.optimize(old_weights['db'], db)
+
                 self.layers[i].update_weights(dW, db, self.learning_rate)
                 dA = dA_prev
                 i = i - 1
@@ -137,6 +153,12 @@ class NeuralNetwork:
                 Z = self.cache['Z' + str(i + 1)]
                 A_prev = self.cache['A' + str(i)]
                 dW, db, dA_prev = self.layers[i].back_propagate(dA, Z, A_prev, self.m)
+
+                # dict of W, b, dW, db in i-th layer
+                old_weights = self.layers[i].get_weights()
+                dW = self.optimizer.optimize(old_weights['dW'], dW)
+                db = self.optimizer.optimize(old_weights['db'], db)
+
                 self.layers[i].update_weights(dW, db, self.learning_rate)
                 dA = dA_prev
                 i = i - 1
