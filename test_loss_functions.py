@@ -24,7 +24,8 @@ class TestLossFunctions(unittest.TestCase):
         self.assertTrue(np.linalg.norm(difference) < 1e-4)
 
     def test_likelihood_loss_derivative(self):
-        result = lf.max_likelihood_loss_derivative(np.array([[.9, 0.1, .2],[.1, .9, .8]]), np.array([[1, 0, 0],[0, 1, 1]]))
+        result = lf.max_likelihood_loss_derivative(np.array([[.9, 0.1, .2], [.1, .9, .8]]),
+                                                   np.array([[1, 0, 0], [0, 1, 1]]))
         expected_result = np.array([[-1.111111, 0, 0], [0, -1.111111, -1.25]])
         difference = result - expected_result
         self.assertTrue(np.linalg.norm(difference) < 1e-4)
