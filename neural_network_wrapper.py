@@ -53,7 +53,16 @@ class NeuralNetworkWrapper:
             batches.append(idxs)
         return batches
 
-    def train(self, X, y, epochs, validation_split=0.1, verbosity=True):
+    def train(self,
+              X,
+              y,
+              epochs,
+              validation_split=0.1,
+              verbosity=True,
+              cache_weights_on_epoch=False):
+
+        # cached network weights on epoch end
+        if cache_weights_on_epoch: self.cache_weights_on_epoch=[]
         self.validation_split = validation_split
         if validation_split > 0:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=validation_split)
@@ -82,6 +91,9 @@ class NeuralNetworkWrapper:
                                                                       y_test.T, y_test.shape[0]))
             if verbosity:
                 print(f'Loss after {epoch + 1} epochs: {self.loss_on_epoch[-1]:^.3f}', end="\n")
+
+            if cache_weights_on_epoch: self.cache_weights_on_epoch.append(self.NN.get_weights())
+
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return
 
@@ -97,3 +109,5 @@ class NeuralNetworkWrapper:
 
     def predict(self, X):
         return self.NN.predict(X)
+
+

@@ -177,3 +177,9 @@ class NeuralNetworkCore:
             output: np.ndarray
             A, _ = self.layers[i].propagate(A)
         return A.T
+
+    def get_weights(self):
+        if self.layers is not None:
+            return [layer.get_weights()['W'] for layer in self.layers]
+        else:
+            raise Exception("Layers have not been initialized yet!")
