@@ -27,7 +27,7 @@ def make_network_state_gif(cached_network_states,
                     G.add_node(k, pos=v)
 
                 weights = [layer for layer in cache]
-                # for w in weights: w *= 10
+                for w in weights: w *= 10
 
                 for num_layer in range(len(weights)):
                     num_row, num_col = weights[num_layer].shape
@@ -55,7 +55,9 @@ def make_network_state_gif(cached_network_states,
 
         for picture in pic_names:
             new_frame = Image.open(imgs_dir + picture)
-            frames.append(new_frame)
+
+            for i in range(10):
+                frames.append(new_frame)
 
         for _ in range(30):
             frames.append(frames[-1])
