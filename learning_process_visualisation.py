@@ -28,8 +28,7 @@ class LearningProcessVisualisation:
 
         y_train = one_hot_encode(y_train)
 
-        n = X_train.shape[1]
-        NeuralNet = NeuralNetworkCore(n,
+        NeuralNet = NeuralNetworkCore(X_train.shape[1],
                                       self.layers,
                                       self.activation_functions,
                                       "max_likelihood_loss",
@@ -47,9 +46,9 @@ class LearningProcessVisualisation:
         shift_x = abs(x_max - x_min) / 8
         shift_y = abs(y_max - y_min) / 8
 
-        xx, yy = np.meshgrid(np.linspace(x_min - shift_x, x_max + shift_x, 50),
+        x_grid, y_grid = np.meshgrid(np.linspace(x_min - shift_x, x_max + shift_x, 50),
                              np.linspace(y_min - shift_y, y_max + shift_y, 50))
-        grid_predict = np.column_stack((np.reshape(xx, (-1, 1)), np.reshape(yy, (-1, 1))))
+        grid_predict = np.column_stack((np.reshape(x_grid, (-1, 1)), np.reshape(y_grid, (-1, 1))))
 
         for i in range(iterations):
             loss = NeuralNet.train(X_train, y_train, 1)
@@ -62,7 +61,7 @@ class LearningProcessVisualisation:
 
                 plt.figure(figsize=(9, 6))
                 plt.axis('off')
-                plt.contourf(xx, yy, xy_grid_hat)
+                plt.contourf(x_grid, y_grid, xy_grid_hat)
                 plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, animated=True, edgecolors='black')
                 textbox_message = f'Iteration: {i + 1} \n Loss: {loss[0]:.4f}'
                 plt.text(x_min - shift_x / 2, y_max + shift_y / 2,
