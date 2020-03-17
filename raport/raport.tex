@@ -1,0 +1,105 @@
+\documentclass[a4]{article}
+
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+
+\title{Deep Learning Methods \\ Project 1}
+\author{Jakub Kała \& Krzysztof Spalińksi}
+\date{March 2020}
+
+\renewcommand{\contentsname}{Table of contents}
+
+\begin{document}
+\maketitle
+
+
+The goal of the first project for Deep Learning Methods class is to create a low level implementation of multi layer perceptron in programming language of choice (in our case it is Python with NumPy package).
+
+\tableofcontents
+\vspace{2em}
+
+
+ 
+
+\newpage
+\section{Documentation}
+
+Our design was to create a set of classes for a user with basic knowledge of neural network architectures. There are two main classes made for users to interact with: 
+\begin{itemize}
+\itemsep0em 
+	\item \texttt{NeuralNetworkWrapper} -- allows user to create a neural network. It includes some tools for the user, including learning in batches, split for training and validation set, drawing a loss function, etc.
+	\item \texttt{LearningProcessVisualisation} -- allows user to visualise the learning process on a 2D dataset.
+\end{itemize}
+There is also \texttt{Optimizer} class with optimizers to use for neural network training.  
+
+\subsection{\texttt{NeuralNetworkCore} class}
+This class allows user to create a multi layer perceptron. Upon initialisation, user has to specify number of neurones in each layer (including input layer), activation function for each layer, loss function, learning rate, optimizer and whether the there should be bias in linear transformation part. Instances of \texttt{NeuralNetworkCore} class have two methods: train and predict. 
+
+
+\subsubsection{\texttt{NeuralNetworkWrapper} initialization}
+\begin{itemize}
+\itemsep0em 
+	\item \texttt{input\_dim} [\texttt{int}]: a dimension of input observations. 
+	\item \texttt{neuron\_numbers} [\texttt{list} of ints]: numbers of neurons in each layer, length of the list specifies a number of layers in the network.
+	\item \texttt{activation\_functions} [\texttt{list} of strings]: names of activation function for each layer. Available names are: \texttt{sigmoid}, \texttt{relu}, \texttt{leaky\_relu}, \texttt{tanh} and \texttt{softmax}.
+	\item \texttt{loss\_function} [\texttt{str}]: name of the loss function that is optimized during the training. Available names are: \texttt{logistic\_loss} and \texttt{max\_likelihood\_loss}
+	\item \texttt{learning\_rate} [\texttt{float}]: learning rate used to update the weights during backpropagation. 
+	\item \texttt{optimizer} [\texttt{Optimizer}, optional]: optimizer used for updating weights. Default is stochastic gradient descent. More information on the subject can be found it \texttt{Optimizer} class documentation. 
+	\item \texttt{batch\_size} [\texttt{int}, optional]: batch size for training. By default set to 128.
+	\item \texttt{bias} [\texttt{boolean}, optional]: if \texttt{False} then bias is set to zero and is not updated in the process of backpropagation. By default set to \texttt{True}.
+\end{itemize}
+
+\newpage 
+
+\subsubsection{\texttt{train} method}
+Input:
+\begin{itemize}
+	\item \texttt{X\_train} [\texttt{numpy.ndarray}]: 2 dimensional array containing training observations (in rows). 
+	\item \texttt{y\_train} [\texttt{numpy.ndarray}]: 2 or 1 dimensional array containing training labels. If labels are real numbers, then it should be a vector ($1 \times n$ matrix), if labels are in higher dimensions then they should be in rows ($m \times n$ matrix, where $m$ is dimension of a label). 
+	\item \texttt{epochs} [\texttt{int}]: numbers of epochs of neural network. One epoch means going forward and backwards in the network with whole training dataset.
+	\item \texttt{validation\_split} [\texttt{int}, optional]: fraction of the original training set that is taken to make validation set. By default set to $0.1$.  
+	\item \texttt{verbosity} [\texttt{boolean}, optional]: If set to \texttt{True}, learning progress will be printed on the go. By default set to \texttt{True}.
+	\item \texttt{cache\_weights\_on\_epoch} [\texttt{boolean}, optional]: weight cache is used to create visualisation of learning state. By default set to \texttt{False}. 
+\end{itemize}
+Output:
+\begin{itemize}
+	\item \texttt{loss\_on\_iteration} [\texttt{list} of floats]: value of loss function on training dataset after each iteration. 
+\end{itemize}
+
+\subsubsection{\texttt{predict} method}
+Input:
+\begin{itemize}
+	\item \texttt{X} [\texttt{numpy.ndarray}]: a dataset to predict on (observations in rows). 
+\end{itemize}
+Output:
+\begin{itemize}
+	\item \texttt{y\_hat} [\texttt{numpy.ndarray}]: array of predictions for input dataset.  
+\end{itemize}
+
+
+\subsubsection{\texttt{plot\_loss} method}
+Input:
+\begin{itemize}
+	\item \texttt{None} 
+\end{itemize}
+Output:
+\begin{itemize}
+	\item Plot of the loss function (y-axis) to the number of epochs (x-axis) is displayed. Includes loss on validation loss (if present). 
+\end{itemize}
+
+
+\subsection{\texttt{LearningProcessVisualisation} class}
+
+
+\subsection{\texttt{Optimizer} class}
+
+\newpage
+\section{Testing on classification datasets}
+
+\newpage
+\section{Testing on regression datasets}
+
+\newpage
+\section{Digit recognition Kaggle competition}
+
+\end{document}

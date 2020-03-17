@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 import random
 import numpy as np
 from matplotlib import pyplot as plt
+import optimizers
 
 
 class NeuralNetworkWrapper:
@@ -12,8 +13,8 @@ class NeuralNetworkWrapper:
                  activation_functions,
                  loss_function,
                  learning_rate,
-                 optimizer,
-                 batch_size=1,
+                 optimizer=optimizers.Optimizer(),
+                 batch_size=128,
                  bias=True):
         """
         Wrapper for NeuralNetwork class
@@ -37,6 +38,7 @@ class NeuralNetworkWrapper:
         self.loss_on_epoch = []
         self.validation_split = None
         self.loss_on_epoch_valid = None
+        self.cache_weights_on_epoch = None
 
     @staticmethod
     def create_batches(n_obs, batch_size):
@@ -62,7 +64,8 @@ class NeuralNetworkWrapper:
               cache_weights_on_epoch=False):
 
         # cached network weights on epoch end
-        if cache_weights_on_epoch: self.cache_weights_on_epoch=[]
+        if cache_weights_on_epoch:
+            self.cache_weights_on_epoch = []
         self.validation_split = validation_split
         if validation_split > 0:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=validation_split)
@@ -92,7 +95,8 @@ class NeuralNetworkWrapper:
             if verbosity:
                 print(f'Loss after {epoch + 1} epochs: {self.loss_on_epoch[-1]:^.3f}', end="\n")
 
-            if cache_weights_on_epoch: self.cache_weights_on_epoch.append(self.NN.get_weights())
+            if cache_weights_on_epoch:
+                self.cache_weights_on_epoch.append(self.NN.get_weights())
 
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return
@@ -109,5 +113,3 @@ class NeuralNetworkWrapper:
 
     def predict(self, X):
         return self.NN.predict(X)
-
-
