@@ -21,7 +21,7 @@ tools to set up batches, split the training dataset for training and validation,
 
 This class allows the user to visualise the learning process on a 2D dataset. 
 
-![Visualisation of learning process](animation/three_gauss_1000.gif)
+![Visualisation of learning process on 2D dataset](animation/three_gauss_1000.gif) ![Visualisation of learning process on 1D dataset](animation/cube_1000.gif)
 
 
 ## TODO:
