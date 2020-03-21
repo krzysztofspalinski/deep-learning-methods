@@ -62,8 +62,15 @@ class NeuralNetworkWrapper:
               validation_split=0.1,
               verbosity=True,
               cache_weights_on_epoch=False,
-              cache_accuracy=False):
+              cache_accuracy=False,
+              test_accuracy=None):
 
+        # caching test set accuracy on epoch end
+        if test_accuracy is not None:
+            self.test_accuracy = []
+            X_test, y_test = test_accuracy
+
+        # caching train & validation accuracy on epoch end
         if cache_accuracy:
             self.accuracy = []
             self.accuracy_valid = []
@@ -106,6 +113,9 @@ class NeuralNetworkWrapper:
             if cache_accuracy:
                 self.accuracy.append(self.eval_accuracy(y_train, self.predict_classes(X_train)))
                 self.accuracy_valid.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
+
+            if test_accuracy:
+                self.test_accuracy.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
 
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return
