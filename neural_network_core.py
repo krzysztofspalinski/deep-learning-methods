@@ -178,6 +178,11 @@ class NeuralNetworkCore:
             A, _ = self.layers[i].propagate(A)
         return A.T
 
+    def predict_classes(self, X):
+        predictions = self.predict(X)
+        predictions = (predictions == predictions.max(axis=1, keepdims=True)).astype(int)
+        return predictions
+
     def get_weights(self):
         if self.layers is not None:
             return [layer.get_weights()['W'] for layer in self.layers]
