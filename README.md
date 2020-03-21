@@ -22,9 +22,13 @@ tools to set up batches, split the training dataset for training and validation,
 This class allows the user to visualise the learning process. 
 
 
-2D dataset| 1D dataset
-:-------------------------:|:-------------------------:
-![2D dataset visualisation](animation/three_gauss_1000.gif)  |  ![1D dataset visualisation](animation/cube_1000.gif)
+2D dataset example:
+
+![2D dataset visualisation](animation/three_gauss_1000.gif) 
+
+1D dataset example:
+
+![1D dataset visualisation](animation/cube_1000.gif)
 
 ## TODO:
 * create documentation
