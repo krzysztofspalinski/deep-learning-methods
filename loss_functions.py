@@ -21,10 +21,20 @@ def max_likelihood_loss_derivative(y_hat, y):
     return -np.divide(y, y_hat)
 
 
+def root_mean_squared_error(y_hat, y, m):
+    return (1 / m) * np.sum(np.square(y - y_hat))
+
+
+def root_mean_squared_error_derivative(y_hat, y):
+    return (-2) * (y - y_hat)
+
+
 def text2func(name):
     if name == "logistic_loss":
         return logistic_loss, logistic_loss_derivative
     elif name == "max_likelihood_loss":
         return max_likelihood_loss, max_likelihood_loss_derivative
+    elif name == "root_mean_squared_error":
+        return root_mean_squared_error, root_mean_squared_error_derivative
     else:
         raise NameError('Wrong name of loss function.')
