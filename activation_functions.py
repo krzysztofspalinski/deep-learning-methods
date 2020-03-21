@@ -58,6 +58,14 @@ def softmax_derivative(Z):
 	return None
 
 
+def linear(Z):
+	return Z
+
+
+def linear_derivative(Z):
+	return np.ones_like(Z)
+
+
 def text2func(name: str):
 	if name == 'sigmoid':
 		return sigmoid, sigmoid_derivative
@@ -69,6 +77,8 @@ def text2func(name: str):
 		return tanh, tanh_derivative
 	elif name == 'softmax':
 		return softmax, softmax_derivative
+	elif name == 'linear':
+		return linear, linear_derivative
 	else:
 		raise NameError('Wrong name of activation function.')
 
