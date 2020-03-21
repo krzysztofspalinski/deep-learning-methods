@@ -14,7 +14,7 @@ class NeuralNetworkWrapper:
                  loss_function,
                  learning_rate,
                  optimizer=optimizers.Optimizer(),
-                 batch_size=128,
+                 batch_size=1,
                  bias=True):
         """
         Wrapper for NeuralNetwork class
@@ -86,8 +86,8 @@ class NeuralNetworkWrapper:
         else:
             X_train = X
             y_train = y
-            X_test = None
-            y_test = None
+            X_valid = None
+            y_valid = None
 
         y_train = np.reshape(y_train, (y_train.shape[0], -1))
 
@@ -102,8 +102,8 @@ class NeuralNetworkWrapper:
             self.loss_on_epoch.append(self.NN.loss_function(self.NN.predict(X_train).T, y_train.T, y_train.shape[0]))
 
             if validation_split > 0:
-                self.loss_on_epoch_valid.append(self.NN.loss_function(self.NN.predict(X_test).T,
-                                                                      y_test.T, y_test.shape[0]))
+                self.loss_on_epoch_valid.append(self.NN.loss_function(self.NN.predict(X_valid).T,
+                                                                      y_valid.T, y_valid.shape[0]))
             if verbosity:
                 print(f'Loss after {epoch + 1} epochs: {self.loss_on_epoch[-1]:^.3f}', end="\n")
 
@@ -112,9 +112,9 @@ class NeuralNetworkWrapper:
 
             if cache_accuracy:
                 self.accuracy.append(self.eval_accuracy(y_train, self.predict_classes(X_train)))
-                self.accuracy_valid.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
+                self.accuracy_valid.append(self.eval_accuracy(y_valid, self.predict_classes(X_valid)))
 
-            if test_accuracy:
+            if test_accuracy is not None:
                 self.test_accuracy.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
 
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
