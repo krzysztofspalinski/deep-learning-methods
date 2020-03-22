@@ -29,7 +29,3 @@ This class allows the user to visualise the learning process.
 1D dataset example:
 
 ![1D dataset visualisation](animation/cube_1000.gif)
-
-## TODO:
-* create documentation
-* add nn animation
