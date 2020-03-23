@@ -82,7 +82,7 @@ class LearningProcessVisualisation:
         NeuralNet = NeuralNetworkCore(X_train.shape[1],
                                       self.layers,
                                       self.activation_functions,
-                                      "root_mean_squared_error",
+                                      "mean_squared_error",
                                       self.learning_rate)
 
         tmp_path = "./.TMP/"
