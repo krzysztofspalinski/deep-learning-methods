@@ -80,8 +80,8 @@ class NeuralNetworkWrapper:
             self.cache_weights_on_epoch = []
         self.validation_split = validation_split
         if validation_split > 0:
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=validation_split)
-            y_test = np.reshape(y_test, (y_test.shape[0], -1))
+            X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=validation_split)
+            y_valid = np.reshape(y_valid, (y_valid.shape[0], -1))
             self.loss_on_epoch_valid = []
         else:
             X_train = X
