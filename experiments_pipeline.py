@@ -5,30 +5,31 @@ import random
 import os
 
 from neural_network_wrapper import NeuralNetworkWrapper
-from data_preprocessing  import StandardScaler
+from data_preprocessing import StandardScaler, one_hot_encode
 import optimizers
 
 import matplotlib.pyplot as plt
 
 
-def prepare_data_simple(train_data, test_data):
+def prepare_data_simple(train_data, test_data, onehot=False):
     X_train = np.array(train_data.loc[:, ['x', 'y']])
     y_train = train_data.cls
-    y_train -= 1
-    # one hot encoding
-    y_ohc = np.zeros((y_train.size, int(np.max(y_train)) + 1))
-    y_ohc[np.arange(y_train.size), y_train.astype(np.int)] = 1
-    y_train = y_ohc
+    y_train = np.array(y_train)
 
     X_test = np.array(test_data.loc[:, ['x', 'y']])
     y_test = test_data.cls
-    y_test -= 1
-    # one hot encoding
-    y_ohc = np.zeros((y_test.size, int(np.max(y_test)) + 1))
-    y_ohc[np.arange(y_test.size), y_test.astype(np.int)] = 1
-    y_test = y_ohc
+    y_test = np.array(y_test)
 
-    # Are we supposed to use StandardScaler?
+    if onehot:
+        y_train = one_hot_encode(y_train)
+        y_test = one_hot_encode(y_test)
+    else:
+        y_train -= 1
+        y_test -= 1
+        y_train = y_train.T
+        y_test = y_test.T
+
+
     ss = StandardScaler()
     X_train = ss.fit_transform(X_train)
     X_test = ss.transform(X_test)
@@ -240,22 +241,30 @@ def visualize_experiment(d, title="", figsize=(21, 12)):
 import datetime
 
 
-def experiment_save_results(d, titles, path, figsize=(21, 12)):
+def experiment_save_results(d, architecture, path, ds_name, figsize=(21, 12)):
+
+    titles = {'lr': 'Learning rate comparison for {} architecture'.format(str(architecture)),
+              'activation_function': 'Activation functions comparison for {} architecture'.format(
+                  str(architecture)),
+              'inertia': 'Momentum impact comparison for {} architecture'.format(str(architecture)),
+              'batch_size': 'Batch size impact comparison for {} architecture'.format(
+                  str(architecture))}
+
+
     for exp_name, exp_results in d.items():
         output_table, fig = visualize_experiment(exp_results,
                                                  titles[exp_name])
         with open(os.path.join(path,
-                               exp_name + "_" + datetime.datetime.today().strftime("%Y_%m_%d_%H_%M_%S") + "_" + ".txt"),
+                               exp_name + "_" + ds_name + "_" + datetime.datetime.today().strftime("%Y_%m_%d_%H_%M_%S") + "_" + ".txt"),
                   "w") as text_file:
             text_file.write(output_table.to_latex())
 
-        print(
-            os.path.join(path, exp_name + "_" + datetime.datetime.today().strftime("%Y_%m_%d_%H_%M_%S") + "_" + ".txt"))
         fig.savefig(os.path.join(path,
-                                 exp_name + "_" + datetime.datetime.today().strftime("%Y_%m_%d_%H_%M_%S") + ".png"))
+                                 exp_name + "_" + ds_name + "_"+ datetime.datetime.today().strftime("%Y_%m_%d_%H_%M_%S") + ".png"))
 
 
 def main():
+
     data_simple_train_100 = pd.read_csv("./projekt1/classification/data.simple.train.100.csv")
     data_simple_train_500 = pd.read_csv("./projekt1/classification/data.simple.train.500.csv")
     data_simple_train_1000 = pd.read_csv("./projekt1/classification/data.simple.train.1000.csv")
@@ -266,20 +275,44 @@ def main():
     data_simple_test_1000 = pd.read_csv("./projekt1/classification/data.simple.test.1000.csv")
     data_simple_test_10000 = pd.read_csv("./projekt1/classification/data.simple.test.10000.csv")
 
-    data = [{"dataset name": "Data simple 100 obs",
-             "data": prepare_data_simple(data_simple_train_100, data_simple_test_100)},
-            {"dataset name": "Data simple 500 obs",
-             "data": prepare_data_simple(data_simple_train_500, data_simple_test_500)},
-            {"dataset name": "Data simple 1000 obs",
-             "data": prepare_data_simple(data_simple_train_1000, data_simple_test_1000)},
-            {"dataset name": "Data simple 10000 obs",
-             "data": prepare_data_simple(data_simple_train_10000, data_simple_test_10000)}]
+
+
+    data_gauss_train_100 = pd.read_csv("./projekt1/classification/data.three_gauss.train.100.csv")
+    data_gauss_train_500 = pd.read_csv("./projekt1/classification/data.three_gauss.train.500.csv")
+    data_gauss_train_1000 = pd.read_csv("./projekt1/classification/data.three_gauss.train.1000.csv")
+    data_gauss_train_10000 = pd.read_csv("./projekt1/classification/data.three_gauss.train.10000.csv")
+
+    data_gauss_test_100 = pd.read_csv("./projekt1/classification/data.three_gauss.test.100.csv")
+    data_gauss_test_500 = pd.read_csv("./projekt1/classification/data.three_gauss.test.500.csv")
+    data_gauss_test_1000 = pd.read_csv("./projekt1/classification/data.three_gauss.test.1000.csv")
+    data_gauss_test_10000 = pd.read_csv("./projekt1/classification/data.three_gauss.test.10000.csv")
+
+    data_simple = [{"dataset name": "Data simple 100 obs",
+                     "data": prepare_data_simple(data_simple_train_100, data_simple_test_100)},
+                    {"dataset name": "Data simple 500 obs",
+                     "data": prepare_data_simple(data_simple_train_500, data_simple_test_500)},
+                    {"dataset name": "Data simple 1000 obs",
+                     "data": prepare_data_simple(data_simple_train_1000, data_simple_test_1000)},
+                    {"dataset name": "Data simple 10000 obs",
+                     "data": prepare_data_simple(data_simple_train_10000, data_simple_test_10000)}]
+
+    data_gauss = [{"dataset name": "Data three gauss 100 obs",
+                   "data" : prepare_data_simple(data_gauss_train_100, data_gauss_test_100, onehot=True)},
+                  {"dataset name": "Data three gauss 500 obs",
+                   "data": prepare_data_simple(data_gauss_train_500, data_gauss_test_500, onehot=True)},
+                  {"dataset name": "Data three gauss 1000 obs",
+                   "data": prepare_data_simple(data_gauss_train_1000, data_gauss_test_1000, onehot=True)},
+                  {"dataset name": "Data three gauss 10000 obs",
+                   "data": prepare_data_simple(data_gauss_train_10000, data_gauss_test_10000, onehot=True)}]
+
 
     # CETERIS PARIBUS NETWORK ARCHITECTURE
-    experiment_dict = {
+
+    # Architecture 1
+    arch1 = {
         "input_dim": 2,
-        "neuron_numbers": [4, 4, 2],  # number of neurons in consecutive layers
-        "activation_functions": ['relu', 'relu'],
+        "neuron_numbers": [1],  # number of neurons in consecutive layers
+        "activation_functions": [],
         "loss_function": 'logistic_loss',
         "batch_size": 64,
         "num_epochs": 10,
@@ -287,6 +320,69 @@ def main():
         "output_activation": ['sigmoid'],
         "learning_rate": 0.01
     }
+
+    # Architecture 2
+    arch2 = {
+        "input_dim": 2,
+        "neuron_numbers": [5, 1],  # number of neurons in consecutive layers
+        "activation_functions": ['relu'] * 2,
+        "loss_function": 'logistic_loss',
+        "batch_size": 64,
+        "num_epochs": 10,
+        "seed": 42,
+        "output_activation": ['sigmoid'],
+        "learning_rate": 0.01
+    }
+    # Architecture 3
+    arch3 = {
+        "input_dim": 2,
+        "neuron_numbers": [5, 5, 1],  # number of neurons in consecutive layers
+        "activation_functions": ['relu'] * 2,
+        "loss_function": 'logistic_loss',
+        "batch_size": 64,
+        "num_epochs": 10,
+        "seed": 42,
+        "output_activation": ['sigmoid'],
+        "learning_rate": 0.01
+    }
+    # Architecture 4
+    arch4 = {
+        "input_dim": 2,
+        "neuron_numbers": [10, 5, 1],  # number of neurons in consecutive layers
+        "activation_functions": ['relu'] * 2,
+        "loss_function": 'logistic_loss',
+        "batch_size": 64,
+        "num_epochs": 10,
+        "seed": 42,
+        "output_activation": ['sigmoid'],
+        "learning_rate": 0.01
+    }
+    # Architecture 5
+    arch5 = {
+        "input_dim": 2,
+        "neuron_numbers": [5, 5, 5, 5, 1],  # number of neurons in consecutive layers
+        "activation_functions": ['relu'] * 4,
+        "loss_function": 'logistic_loss',
+        "batch_size": 64,
+        "num_epochs": 10,
+        "seed": 42,
+        "output_activation": ['sigmoid'],
+        "learning_rate": 0.01
+    }
+    # Architecture 6
+    arch6 = {
+        "input_dim": 2,
+        "neuron_numbers": [10, 10, 5, 5, 1],  # number of neurons in consecutive layers
+        "activation_functions": ['relu'] * 4,
+        "loss_function": 'logistic_loss',
+        "batch_size": 64,
+        "num_epochs": 10,
+        "seed": 42,
+        "output_activation": ['sigmoid'],
+        "learning_rate": 0.01
+    }
+
+    ####
 
     experiments = {'lr':
                        {'lr=0.0001': 0.0001,
@@ -309,17 +405,84 @@ def main():
                         'bs=64': 64}
                    }
 
-    ans = experiments_pipeline(data, experiment_dict, experiments, num_reps=2)
+    ####
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch1, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-1",
+                            ds_name='data_simple')
 
-    titles = {'lr': 'Learning rate comparison for {} architecture'.format(str(experiment_dict['neuron_numbers'])),
-              'activation_function': 'Activation functions comparison for {} architecture'.format(
-                  str(experiment_dict['neuron_numbers'])),
-              'inertia': 'Inertia impact comparison for {} architecture'.format(str(experiment_dict['neuron_numbers'])),
-              'batch_size': 'Batch size impact comparison for {} architecture'.format(
-                  str(experiment_dict['neuron_numbers']))}
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch2, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-2",
+                            ds_name='data_simple')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch3, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-3",
+                            ds_name='data_simple')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch4, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-4",
+                            ds_name='data_simple')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch5, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-5",
+                            ds_name='data_simple')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_simple, arch6, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-6",
+                            ds_name='data_simple')
+
+    for arch in [arch1, arch2, arch3, arch4, arch5, arch6]:
+        arch['neuron_numbers'][-1] = 3
+        arch['output_activation'] = ['softmax']
 
 
-    experiment_save_results(ans, titles, "./report/results/classification/architecture-1")
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch1, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-1",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch2, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-2",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch3, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-3",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch4, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-4",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch5, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-5",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch6, experiments, num_reps=30)
+    experiment_save_results(ans, experiment_dict['neuron_numbers'],
+                            path="./report/results/classification/architecture-6",
+                            ds_name='data_gauss')
+
 
 if __name__ == "__main__":
     main()
