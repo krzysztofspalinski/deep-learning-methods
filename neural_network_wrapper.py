@@ -1,5 +1,5 @@
 from neural_network_core import NeuralNetworkCore
-from sklearn.model_selection import train_test_split
+from data_preprocessing import train_test_split
 import random
 import numpy as np
 from matplotlib import pyplot as plt
@@ -15,7 +15,8 @@ class NeuralNetworkWrapper:
                  learning_rate,
                  optimizer=optimizers.Optimizer(),
                  batch_size=1,
-                 bias=True):
+                 bias=True,
+                 seed=42):
         """
         Wrapper for NeuralNetwork class
         :param input_dim: input size
@@ -26,6 +27,7 @@ class NeuralNetworkWrapper:
         :param batch_size
         :param bias: boolean triggering if bias has to be fitted
         """
+        random.seed(seed)
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.NN = NeuralNetworkCore(input_dim,
@@ -34,7 +36,8 @@ class NeuralNetworkWrapper:
                                     loss_function,
                                     learning_rate,
                                     optimizer,
-                                    bias)
+                                    bias,
+                                    seed=seed)
         self.loss_on_epoch = []
         self.validation_split = None
         self.loss_on_epoch_valid = None

@@ -77,7 +77,8 @@ class NeuralNetworkCore:
                  loss_function,
                  learning_rate: float,
                  optimizer=optimizers.Optimizer(),
-                 bias=True):
+                 bias=True,
+                 seed=42):
         """
         :param input_dim:
         :param neuron_numbers:
@@ -86,6 +87,7 @@ class NeuralNetworkCore:
         :param learning_rate:
         :param bias:
         """
+        np.random.seed(seed)
         self.learning_rate = learning_rate
         self.neuron_numbers = neuron_numbers
         self.activation_functions = activation_functions

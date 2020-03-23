@@ -9,6 +9,19 @@ def one_hot_encode(y):
     return y_ohc
 
 
+def train_test_split(X, y, test_size, seed=42):
+    np.random.seed(seed)
+    assert(X.shape[0] == y.shape[0])
+    dataset_size = X.shape[0]
+
+    indices = np.random.permutation(dataset_size)
+    last_training_index = int(dataset_size * (1 - test_size))
+    training_idx, test_idx = indices[:last_training_index], indices[last_training_index:]
+
+    X_train, X_test, y_train, y_test = X[training_idx, :], X[test_idx, :], y[training_idx, :], y[test_idx, :]
+    return X_train, X_test, y_train, y_test
+
+
 class MinMaxScaler:
     def __init__(self):
         self.min = None
