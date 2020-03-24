@@ -181,9 +181,10 @@ class NeuralNetworkCore:
         return A.T
 
     def predict_classes(self, X):
-        if self.neuron_numbers[-1] > 1: return (predictions > 0.5).astype(int)
+        predictions = self.predict(X)
+        if self.neuron_numbers[-1] == 1:
+            return (predictions > 0.5).astype(int).flatten()
         else:
-            predictions = self.predict(X)
             predictions = (predictions == predictions.max(axis=1, keepdims=True)).astype(int)
             return predictions
 
