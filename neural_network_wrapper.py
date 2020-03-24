@@ -4,7 +4,7 @@ import random
 import numpy as np
 from matplotlib import pyplot as plt
 import optimizers
-
+from loss_functions import mean_squared_error as mse
 
 class NeuralNetworkWrapper:
     def __init__(self,
@@ -42,6 +42,7 @@ class NeuralNetworkWrapper:
         self.validation_split = None
         self.loss_on_epoch_valid = None
         self.cache_weights_on_epoch = None
+        self.test_rmse = None
 
     @staticmethod
     def create_batches(n_obs, batch_size):
@@ -66,12 +67,17 @@ class NeuralNetworkWrapper:
               verbosity=True,
               cache_weights_on_epoch=False,
               cache_accuracy=False,
-              test_accuracy=None):
+              test_accuracy=None,
+              test_rmse=None):
 
         # caching test set accuracy on epoch end
         if test_accuracy is not None:
             self.test_accuracy = []
             X_test, y_test = test_accuracy
+
+        if test_rmse is not None:
+            self.test_rmse = []
+            X_test, y_test = test_rmse
 
         # caching train & validation accuracy on epoch end
         if cache_accuracy:
@@ -119,6 +125,9 @@ class NeuralNetworkWrapper:
 
             if test_accuracy is not None:
                 self.test_accuracy.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
+
+            if test_rmse is not None:
+                self.test_rmse.append(mse(y_hat=y_test, y=self.predict(X_test)) ** 0.5)
 
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return

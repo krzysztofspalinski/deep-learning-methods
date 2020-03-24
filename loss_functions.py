@@ -23,7 +23,9 @@ def max_likelihood_loss_derivative(y_hat, y):
     return -np.divide(y, y_hat + epsilon)
 
 
-def mean_squared_error(y_hat, y, m):
+def mean_squared_error(y_hat, y, m=None):
+    if m is None:
+        m = y.shape[0]
     return (1 / m) * np.sum(np.square(y - y_hat))
 
 
