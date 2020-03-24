@@ -1,0 +1,10 @@
+\begin{tabular}{lllll}
+\toprule
+{} &         lr=0.00001 &          lr=0.0001 &           lr=0.001 &             lr=0.01 \\
+\midrule
+Data activation 100 obs   &   5983.99 +- 62.44 &  5732.90 +- 176.85 &  5332.89 +- 234.81 &  7104.08 +- 2190.67 \\
+Data activation 500 obs   &   5920.93 +- 81.26 &  5281.19 +- 217.04 &  5350.26 +- 266.70 &          nan +- nan \\
+Data activation 1000 obs  &  5804.73 +- 137.02 &  5303.54 +- 237.34 &  6086.08 +- 272.34 &          nan +- nan \\
+Data activation 10000 obs &  5293.77 +- 208.54 &  6014.91 +- 253.48 &   6720.89 +- 30.26 &          nan +- nan \\
+\bottomrule
+\end{tabular}
