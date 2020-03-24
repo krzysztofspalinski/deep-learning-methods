@@ -405,14 +405,13 @@ def main():
                         'bs=64': 64}
                    }
 
-    NUM_REPS = 1
-    ####
-    print("=" * 40)
-    ans = experiments_pipeline(data_simple, arch1, experiments, num_reps=NUM_REPS)
-    experiment_save_results(ans, arch1['neuron_numbers'],
-                            path="./report/results/classification/architecture-1",
-                            ds_name='data_simple')
-
+    # NUM_REPS = 30
+    # print("=" * 40)
+    # ans = experiments_pipeline(data_simple, arch1, experiments, num_reps=NUM_REPS)
+    # experiment_save_results(ans, arch1['neuron_numbers'],
+    #                         path="./report/results/classification/architecture-1",
+    #                         ds_name='data_simple')
+    #
     # print("=" * 40)
     # ans = experiments_pipeline(data_simple, arch2, experiments, num_reps=30)
     # experiment_save_results(ans, arch2['neuron_numbers'],
@@ -442,47 +441,47 @@ def main():
     # experiment_save_results(ans, arch6['neuron_numbers'],
     #                         path="./report/results/classification/architecture-6",
     #                         ds_name='data_simple')
-    #
-    # for arch in [arch1, arch2, arch3, arch4, arch5, arch6]:
-    #     arch['neuron_numbers'][-1] = 3
-    #     arch['output_activation'] = ['softmax']
-    #
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch1, experiments, num_reps=30)
-    # experiment_save_results(ans, arch1['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-1",
-    #                         ds_name='data_gauss')
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch2, experiments, num_reps=30)
-    # experiment_save_results(ans, arch2['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-2",
-    #                         ds_name='data_gauss')
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch3, experiments, num_reps=30)
-    # experiment_save_results(ans, arch3['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-3",
-    #                         ds_name='data_gauss')
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch4, experiments, num_reps=30)
-    # experiment_save_results(ans, arch4['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-4",
-    #                         ds_name='data_gauss')
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch5, experiments, num_reps=30)
-    # experiment_save_results(ans, arch5['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-5",
-    #                         ds_name='data_gauss')
-    #
-    # print("=" * 40)
-    # ans = experiments_pipeline(data_gauss, arch6, experiments, num_reps=30)
-    # experiment_save_results(ans, arch6['neuron_numbers'],
-    #                         path="./report/results/classification/architecture-6",
-    #                         ds_name='data_gauss')
+
+    for arch in [arch1, arch2, arch3, arch4, arch5, arch6]:
+        arch['neuron_numbers'][-1] = 3
+        arch['output_activation'] = ['softmax']
+
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch1, experiments, num_reps=30)
+    experiment_save_results(ans, arch1['neuron_numbers'],
+                            path="./report/results/classification/architecture-1",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch2, experiments, num_reps=30)
+    experiment_save_results(ans, arch2['neuron_numbers'],
+                            path="./report/results/classification/architecture-2",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch3, experiments, num_reps=30)
+    experiment_save_results(ans, arch3['neuron_numbers'],
+                            path="./report/results/classification/architecture-3",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch4, experiments, num_reps=30)
+    experiment_save_results(ans, arch4['neuron_numbers'],
+                            path="./report/results/classification/architecture-4",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch5, experiments, num_reps=30)
+    experiment_save_results(ans, arch5['neuron_numbers'],
+                            path="./report/results/classification/architecture-5",
+                            ds_name='data_gauss')
+
+    print("=" * 40)
+    ans = experiments_pipeline(data_gauss, arch6, experiments, num_reps=30)
+    experiment_save_results(ans, arch6['neuron_numbers'],
+                            path="./report/results/classification/architecture-6",
+                            ds_name='data_gauss')
 
 
 if __name__ == "__main__":

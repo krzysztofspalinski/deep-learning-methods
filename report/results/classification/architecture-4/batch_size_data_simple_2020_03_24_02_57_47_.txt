@@ -1,0 +1,10 @@
+\begin{tabular}{lllll}
+\toprule
+{} &          bs=4 &         bs=16 &         bs=32 &         bs=64 \\
+\midrule
+Data simple 100 obs   &  0.91 +- 0.10 &  0.77 +- 0.14 &  0.69 +- 0.15 &  0.62 +- 0.15 \\
+Data simple 500 obs   &  0.98 +- 0.03 &  0.93 +- 0.09 &  0.85 +- 0.14 &  0.79 +- 0.15 \\
+Data simple 1000 obs  &  0.98 +- 0.01 &  0.95 +- 0.08 &  0.92 +- 0.09 &  0.85 +- 0.14 \\
+Data simple 10000 obs &  0.99 +- 0.00 &  0.99 +- 0.00 &  0.99 +- 0.00 &  0.99 +- 0.01 \\
+\bottomrule
+\end{tabular}

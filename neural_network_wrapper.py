@@ -152,6 +152,6 @@ class NeuralNetworkWrapper:
 
     def eval_accuracy(self, y_true, y_pred):
         if y_true.ndim > 1:
-            return np.sum(np.sum(np.equal(y_true, y_pred), axis=1)) / y_true.shape[0]
+            return np.sum(np.all(np.equal(y_true, y_pred), axis=1)) / y_true.shape[0]
         else:
             return np.sum(np.sum(np.equal(y_true, y_pred))) / y_true.shape[0]

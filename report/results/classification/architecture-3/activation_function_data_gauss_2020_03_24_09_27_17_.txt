@@ -1,0 +1,10 @@
+\begin{tabular}{lllll}
+\toprule
+{} &          relu &    leaky relu &       sigmoid &          tanh \\
+\midrule
+Data three gauss 100 obs   &  0.50 +- 0.18 &  0.51 +- 0.18 &  0.32 +- 0.08 &  0.48 +- 0.20 \\
+Data three gauss 500 obs   &  0.72 +- 0.16 &  0.72 +- 0.16 &  0.40 +- 0.18 &  0.84 +- 0.11 \\
+Data three gauss 1000 obs  &  0.82 +- 0.11 &  0.82 +- 0.10 &  0.52 +- 0.22 &  0.90 +- 0.04 \\
+Data three gauss 10000 obs &  0.92 +- 0.04 &  0.92 +- 0.04 &  0.91 +- 0.04 &  0.93 +- 0.00 \\
+\bottomrule
+\end{tabular}

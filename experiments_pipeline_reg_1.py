@@ -7,6 +7,7 @@ import os
 from neural_network_wrapper import NeuralNetworkWrapper
 from data_preprocessing import StandardScaler, one_hot_encode
 import optimizers
+import loss_functions as lf
 
 import matplotlib.pyplot as plt
 
@@ -94,6 +95,16 @@ def perform_experiment(dataset,
                                           optimizers.Optimizer(),
                                           v,
                                           seed=(d['seed'] + i))
+            elif exp_objective == 'loss_func':
+
+                NN = NeuralNetworkWrapper(d['input_dim'],
+                                          d['neuron_numbers'],
+                                          ['relu'] * (len(d['neuron_numbers']) - 1) + d['output_activation'],
+                                          v,
+                                          d['learning_rate'],
+                                          optimizers.Optimizer(),
+                                          d['batch_size'],
+                                          seed=(d['seed'] + i))
 
             NN.train(X_train,
                      y_train,
@@ -125,17 +136,17 @@ def experiments_pipeline(data,
     """
     """
     d = experiment_dict.copy()
-    output = {'lr': {},
+    output = {'loss_func': {}}
               #'activation_function': {},
-              'inertia': {},
-              'batch_size': {}}
+              #'inertia': {},
+              #'batch_size': {}}
     # Experiments for each dataset
     for dataset in data:
         print("------ Dataset name: {}".format(dataset['dataset name']))
-        output['lr'][dataset['dataset name']] = perform_experiment(dataset['data'],
+        output['loss_func'][dataset['dataset name']] = perform_experiment(dataset['data'],
                                                                    experiment_dict,
-                                                                   'lr',
-                                                                   experiments['lr'],
+                                                                   'lf',
+                                                                   experiments['lf'],
                                                                    num_reps)
         # output['activation_function'][dataset['dataset name']] = perform_experiment(dataset['data'],
         #                                                                             experiment_dict,
@@ -143,17 +154,17 @@ def experiments_pipeline(data,
         #                                                                             experiments['activation_function'],
         #                                                                             num_reps)
 
-        output['inertia'][dataset['dataset name']] = perform_experiment(dataset['data'],
-                                                                        experiment_dict,
-                                                                        'inertia',
-                                                                        experiments['inertia'],
-                                                                        num_reps)
-
-        output['batch_size'][dataset['dataset name']] = perform_experiment(dataset['data'],
-                                                                           experiment_dict,
-                                                                           'batch_size',
-                                                                           experiments['batch_size'],
-                                                                           num_reps)
+        # output['inertia'][dataset['dataset name']] = perform_experiment(dataset['data'],
+        #                                                                 experiment_dict,
+        #                                                                 'inertia',
+        #                                                                 experiments['inertia'],
+        #                                                                 num_reps)
+        #
+        # output['batch_size'][dataset['dataset name']] = perform_experiment(dataset['data'],
+        #                                                                    experiment_dict,
+        #                                                                    'batch_size',
+        #                                                                    experiments['batch_size'],
+        #                                                                    num_reps)
 
     return output
 
@@ -230,7 +241,7 @@ import datetime
 
 def experiment_save_results(d, architecture, path, ds_name, figsize=(21, 12)):
 
-    titles = {'lr': 'Learning rate comparison for {} architecture'.format(str(architecture)),
+    titles = {'lf': 'Loss function comparison for {} architecture'.format(str(architecture)),
               'activation_function': 'Activation functions comparison for {} architecture'.format(
                   str(architecture)),
               'inertia': 'Momentum impact comparison for {} architecture'.format(str(architecture)),
@@ -368,25 +379,24 @@ def main():
 
     ####
 
-    experiments = {'lr':
-                       {'lr=0.00001': 0.00001,
-                        'lr=0.0001': 0.0001,
-                        'lr=0.001': 0.001,
-                        'lr=0.01': 0.01},
+    experiments = {'lf':
+                       {'lr=MSE': 'mean_squared_error',
+                        'lr=MSLE': 'mean_squared_log_error'
+                        },
                    # 'activation_function':
                    #     {'relu': ['relu'],
                    #      'leaky relu': ['leaky_relu'],
                    #      'sigmoid': ['sigmoid'],
                    #      'tanh': ['tanh']},
-                   'inertia':
-                       {'beta=0': 0,
-                        'beta=0.5': 0.5,
-                        'beta=0.9': 0.9},
-                   'batch_size':
-                       {'bs=4': 4,
-                        'bs=16': 16,
-                        'bs=32': 32,
-                        'bs=64': 64}
+                   # 'inertia':
+                   #     {'beta=0': 0,
+                   #      'beta=0.5': 0.5,
+                   #      'beta=0.9': 0.9},
+                   # 'batch_size':
+                   #     {'bs=4': 4,
+                   #      'bs=16': 16,
+                   #      'bs=32': 32,
+                   #      'bs=64': 64}
                    }
 
     NUM_REPS=30

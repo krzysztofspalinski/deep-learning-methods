@@ -1,0 +1,10 @@
+\begin{tabular}{lllll}
+\toprule
+{} &          relu &    leaky relu &       sigmoid &          tanh \\
+\midrule
+Data simple 100 obs   &  0.61 +- 0.16 &  0.61 +- 0.16 &  0.55 +- 0.11 &  0.62 +- 0.13 \\
+Data simple 500 obs   &  0.74 +- 0.14 &  0.74 +- 0.14 &  0.60 +- 0.14 &  0.71 +- 0.15 \\
+Data simple 1000 obs  &  0.82 +- 0.10 &  0.82 +- 0.10 &  0.69 +- 0.14 &  0.83 +- 0.10 \\
+Data simple 10000 obs &  0.98 +- 0.01 &  0.98 +- 0.01 &  0.95 +- 0.03 &  0.98 +- 0.01 \\
+\bottomrule
+\end{tabular}
