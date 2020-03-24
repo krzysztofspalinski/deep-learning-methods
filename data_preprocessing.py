@@ -49,6 +49,8 @@ class StandardScaler:
     def fit_transform(self, X):
         self.mean = np.mean(X, axis=0)
         self.std_dev = np.var(X, axis=0) ** 0.5
+        self.std_dev[self.std_dev == 0] = 1
+
         return (X - self.mean) / self.std_dev
 
     def transform(self, X):
