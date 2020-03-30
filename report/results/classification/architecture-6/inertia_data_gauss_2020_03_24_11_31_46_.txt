@@ -1,0 +1,10 @@
+\begin{tabular}{llll}
+\toprule
+{} &        beta=0 &      beta=0.5 &      beta=0.9 \\
+\midrule
+Data three gauss 100 obs   &  0.64 +- 0.17 &  0.63 +- 0.17 &  0.60 +- 0.17 \\
+Data three gauss 500 obs   &  0.83 +- 0.16 &  0.83 +- 0.16 &  0.80 +- 0.18 \\
+Data three gauss 1000 obs  &  0.87 +- 0.13 &  0.87 +- 0.13 &  0.86 +- 0.13 \\
+Data three gauss 10000 obs &  0.91 +- 0.11 &  0.91 +- 0.11 &  0.91 +- 0.11 \\
+\bottomrule
+\end{tabular}

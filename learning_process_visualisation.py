@@ -14,8 +14,8 @@ class LearningProcessVisualisation:
     y_test/train should consist of m x 1 column vector of numbers 1, 2, ..., #classes.
     """
 
-    def __init__(self, layers, activation_functions, learning_rate):
-        self.layers = layers
+    def __init__(self, neuron_numbers, activation_functions, learning_rate):
+        self.neuron_numbers = neuron_numbers
         self.activation_functions = activation_functions
         self.learning_rate = learning_rate
 
@@ -29,7 +29,7 @@ class LearningProcessVisualisation:
         y_train = one_hot_encode(y_train)
 
         NeuralNet = NeuralNetworkCore(X_train.shape[1],
-                                      self.layers,
+                                      self.neuron_numbers,
                                       self.activation_functions,
                                       "max_likelihood_loss",
                                       self.learning_rate)
@@ -80,7 +80,7 @@ class LearningProcessVisualisation:
                    ):
 
         NeuralNet = NeuralNetworkCore(X_train.shape[1],
-                                      self.layers,
+                                      self.neuron_numbers,
                                       self.activation_functions,
                                       "mean_squared_error",
                                       self.learning_rate)

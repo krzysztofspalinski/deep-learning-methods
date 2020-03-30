@@ -1,10 +1,10 @@
 from neural_network_core import NeuralNetworkCore
-from sklearn.model_selection import train_test_split
+from data_preprocessing import train_test_split
 import random
 import numpy as np
 from matplotlib import pyplot as plt
 import optimizers
-
+from loss_functions import mean_squared_error as mse
 
 class NeuralNetworkWrapper:
     def __init__(self,
@@ -15,7 +15,8 @@ class NeuralNetworkWrapper:
                  learning_rate,
                  optimizer=optimizers.Optimizer(),
                  batch_size=1,
-                 bias=True):
+                 bias=True,
+                 seed=42):
         """
         Wrapper for NeuralNetwork class
         :param input_dim: input size
@@ -26,6 +27,7 @@ class NeuralNetworkWrapper:
         :param batch_size
         :param bias: boolean triggering if bias has to be fitted
         """
+        random.seed(seed)
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.NN = NeuralNetworkCore(input_dim,
@@ -34,11 +36,13 @@ class NeuralNetworkWrapper:
                                     loss_function,
                                     learning_rate,
                                     optimizer,
-                                    bias)
+                                    bias,
+                                    seed=seed)
         self.loss_on_epoch = []
         self.validation_split = None
         self.loss_on_epoch_valid = None
         self.cache_weights_on_epoch = None
+        self.test_rmse = None
 
     @staticmethod
     def create_batches(n_obs, batch_size):
@@ -63,12 +67,17 @@ class NeuralNetworkWrapper:
               verbosity=True,
               cache_weights_on_epoch=False,
               cache_accuracy=False,
-              test_accuracy=None):
+              test_accuracy=None,
+              test_rmse=None):
 
         # caching test set accuracy on epoch end
         if test_accuracy is not None:
             self.test_accuracy = []
             X_test, y_test = test_accuracy
+
+        if test_rmse is not None:
+            self.test_rmse = []
+            X_test, y_test = test_rmse
 
         # caching train & validation accuracy on epoch end
         if cache_accuracy:
@@ -117,6 +126,9 @@ class NeuralNetworkWrapper:
             if test_accuracy is not None:
                 self.test_accuracy.append(self.eval_accuracy(y_test, self.predict_classes(X_test)))
 
+            if test_rmse is not None:
+                self.test_rmse.append(mse(y_hat=y_test, y=self.predict(X_test)) ** 0.5)
+
         print(f'Final loss: {self.loss_on_epoch[-1]:^.3f}', end="\n")
         return
 
@@ -137,5 +149,9 @@ class NeuralNetworkWrapper:
     def predict_classes(self, X):
         return self.NN.predict_classes(X)
 
+
     def eval_accuracy(self, y_true, y_pred):
-        return np.sum(np.all(np.equal(y_true, y_pred), axis=1)) / y_true.shape[0]
+        if y_true.ndim > 1:
+            return np.sum(np.all(np.equal(y_true, y_pred), axis=1)) / y_true.shape[0]
+        else:
+            return np.sum(np.sum(np.equal(y_true, y_pred))) / y_true.shape[0]
